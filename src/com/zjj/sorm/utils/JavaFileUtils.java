@@ -8,6 +8,7 @@ import com.zjj.sorm.core.MySqlTypeConvertor;
 import com.zjj.sorm.core.TableContext;
 import com.zjj.sorm.core.TypeConvertor;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,10 +68,10 @@ public class JavaFileUtils {
 
         StringBuilder src = new StringBuilder();
         //生成package语句
-        src.append("package "+ DBManager.getConf().getPoPackage()+"\n\n");
+        src.append("package "+ DBManager.getConf().getPoPackage()+";\n\n");
         //生成import语句
         src.append("import java.sql.*;\n");
-        src.append("import java.util.*\n\n");
+        src.append("import java.util.*;\n\n");
         //生成类声明语句
         src.append("public class "+StringUtils.firstChar2UpperCase(tableInfo.getTname())+" {\n\n");
         //生成属性列表
@@ -91,11 +92,43 @@ public class JavaFileUtils {
 
         src.append("}\n");
 
-        System.out.println(src);
+        //System.out.println(src);
         return src.toString();
     }
 
+    public static void createJavaPOFile(TableInfo tableInfo,TypeConvertor typeConvertor) {
+        String src = createJavaSrc(tableInfo, typeConvertor);
 
+        String srcPath = DBManager.getConf().getSrcPath()+"/";
+        String poPath = DBManager.getConf().getPoPackage().replaceAll("\\.","/");
+        String fullPath = srcPath+poPath+"/";
+
+        System.out.println(fullPath);
+
+        File f = new File(fullPath);
+        if(!f.exists()){   //指定目录不存在，则帮用户创建
+            f.mkdirs();
+        }
+
+        //通过流的方式，将数据库中的表信息转化为代码字符串后存储到指定的项目路径下
+        try (
+                BufferedWriter bw = new BufferedWriter(
+                        new FileWriter(fullPath+StringUtils.firstChar2UpperCase(tableInfo.getTname()+".java")));
+           //     BufferedReader br = new BufferedReader(new StringReader(src))
+        ) {
+
+//            String msg = null;
+//            while ((msg = br.readLine()) != null) {
+//                bw.write(msg);
+//                bw.newLine();
+//            }
+            bw.write(src);
+            bw.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
 //        ColumnInfo ci = new ColumnInfo("name","varchar",0);
@@ -104,7 +137,10 @@ public class JavaFileUtils {
 //        System.out.println(f);
 
         Map<String,TableInfo> map = TableContext.tables;
-        TableInfo t = map.get("emp");
-        createJavaSrc(t,new MySqlTypeConvertor());
+        for(TableInfo t:map.values()) {
+            //TableInfo t = map.get("emp");
+            //createJavaSrc(t,new MySqlTypeConvertor());
+            createJavaPOFile(t, new MySqlTypeConvertor());
+        }
     }
 }

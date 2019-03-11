@@ -24,10 +24,10 @@ public interface Query {
     /**
      * 删除clazz表示类中对应的表中的记录（指定主键值id的记录）
      * @param clazz 跟着对应的类中Class对象
-     * @param id 主键的值
+     * @param primaryKey 主键的值
      * @return
      */
-    int delete(Class clazz, int id);  //delete from User where id=2
+    void delete(Class clazz, Object primaryKey);  //delete from User where id=2
 
     /**
      * 删除对象在数据库中的记录（对象所在的类对应到表，对象主键的值对应到记录）

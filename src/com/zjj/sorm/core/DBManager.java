@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- *根据配置信息，维持连接对象的管理（增加连接池功能）
+ *根据配置信息，维持连接对象的管理（后期增加连接池功能）
  */
 public class DBManager {
     private static Configuration conf;
@@ -28,7 +28,7 @@ public class DBManager {
         conf.setUser(pros.getProperty("user"));
         conf.setPwd(pros.getProperty("pwd"));
         conf.setPoPackage(pros.getProperty("poPackage"));
-        conf.setSrcPath(pros.getProperty("serPath"));
+        conf.setSrcPath(pros.getProperty("srcPath"));
         conf.setUsingDB(pros.getProperty("usingDB"));
     }
 
